@@ -66,7 +66,6 @@ main {
 }
 
 .intro,
-.note,
 .figure-panel {
   background: var(--paper);
   border: 1px solid var(--line);
@@ -74,13 +73,11 @@ main {
   box-shadow: var(--shadow);
 }
 
-.intro,
-.note {
+.intro {
   padding: 24px 26px;
 }
 
 .intro h2,
-.note h2,
 .figure-copy h2 {
   margin-bottom: 12px;
   color: var(--accent-dark);
@@ -88,7 +85,6 @@ main {
 }
 
 .intro p,
-.note p,
 .figure-copy p {
   margin-bottom: 0;
 }
@@ -180,8 +176,7 @@ main {
   }
 
   .figure-copy,
-  .intro,
-  .note {
+  .intro {
     padding: 20px;
   }
 
