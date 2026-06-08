@@ -171,17 +171,6 @@ function createRoundedBoardGeometry(width, height, thickness, radius) {
   return geometry;
 }
 
-function addCopperRect(parent, width, height, x, y, rotation = 0) {
-  const mesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(width, height),
-    parent.userData.copperMaterial
-  );
-  mesh.position.set(x, y, 0.061);
-  mesh.rotation.z = rotation;
-  parent.add(mesh);
-  return mesh;
-}
-
 function addCopperPad(parent, radius, x, y) {
   const mesh = new THREE.Mesh(
     new THREE.CylinderGeometry(radius, radius, 0.012, 42),
@@ -253,38 +242,25 @@ function initProductViewer() {
   edgeGlow.scale.set(1.006, 1.006, 1.02);
   board.add(edgeGlow);
 
-  addCopperRect(board, 4.4, 0.12, 0, 0.95);
-  addCopperRect(board, 4.2, 0.1, -0.05, -0.95);
-  addCopperRect(board, 0.12, 1.62, -1.85, 0.1);
-  addCopperRect(board, 0.12, 1.58, 1.75, -0.08);
-  addCopperRect(board, 1.15, 0.1, -0.78, 0.24, Math.PI / 7);
-  addCopperRect(board, 1.2, 0.1, 0.82, -0.24, -Math.PI / 8);
-  addCopperRect(board, 0.92, 0.09, 0.12, 0.0, Math.PI / 2);
-
   [
-    [-2.05, 0.95],
-    [-0.8, 0.95],
-    [0.52, 0.95],
-    [1.92, 0.95],
-    [-1.78, -0.95],
-    [-0.45, -0.95],
-    [0.95, -0.95],
-    [2.0, -0.95],
-    [-1.86, 0.1],
-    [1.76, -0.1],
-    [0.12, 0.0]
-  ].forEach(([x, y]) => addCopperPad(board, 0.155, x, y));
-
-  const labelPlane = new THREE.Mesh(
-    new THREE.PlaneGeometry(1.14, 0.34),
-    new THREE.MeshBasicMaterial({
-      color: 0xeaf5f5,
-      transparent: true,
-      opacity: 0.78
-    })
-  );
-  labelPlane.position.set(0, 0.48, 0.069);
-  board.add(labelPlane);
+    [-2.12, 1.02, 0.13],
+    [-1.18, 1.02, 0.13],
+    [-0.24, 1.02, 0.13],
+    [0.7, 1.02, 0.13],
+    [1.64, 1.02, 0.13],
+    [2.22, 0.48, 0.115],
+    [2.22, -0.22, 0.115],
+    [1.64, -0.92, 0.13],
+    [0.7, -0.92, 0.13],
+    [-0.24, -0.92, 0.13],
+    [-1.18, -0.92, 0.13],
+    [-2.12, -0.92, 0.13],
+    [-2.24, -0.22, 0.115],
+    [-2.24, 0.48, 0.115],
+    [-0.72, 0.1, 0.18],
+    [0.0, 0.1, 0.18],
+    [0.72, 0.1, 0.18]
+  ].forEach(([x, y, radius]) => addCopperPad(board, radius, x, y));
 
   board.rotation.set(-0.62, 0.22, -0.1);
   board.scale.setScalar(1.08);
