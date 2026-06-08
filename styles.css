@@ -148,7 +148,7 @@ h1 {
 
 .stage-panel {
   position: relative;
-  min-height: 500px;
+  min-height: 470px;
   padding: 18px 18px 22px;
   border: 1px solid rgba(183, 202, 202, 0.88);
   border-radius: 8px;
@@ -197,14 +197,17 @@ h1 {
   position: relative;
   display: grid;
   place-items: center;
-  min-height: 386px;
-  padding: 20px 0 10px;
+  min-height: 356px;
+  padding: 18px 0 10px;
 }
 
 .product-viewer {
   position: relative;
-  width: min(100%, 640px);
-  height: 360px;
+  width: min(100%, 600px);
+  height: auto;
+  min-height: 320px;
+  max-height: 371px;
+  aspect-ratio: 1.618 / 1;
   overflow: hidden;
   border: 1px solid rgba(178, 202, 205, 0.72);
   border-radius: 8px;
@@ -441,16 +444,17 @@ main {
   }
 
   .stage-panel {
-    min-height: 430px;
+    min-height: 400px;
   }
 
   .substrate-scene {
-    min-height: 330px;
+    min-height: 300px;
     padding-top: 14px;
   }
 
   .product-viewer {
-    height: 300px;
+    min-height: 260px;
+    max-height: 320px;
   }
 
   main {
@@ -499,7 +503,8 @@ main {
   }
 
   .product-viewer {
-    height: 270px;
+    min-height: 0;
+    max-height: none;
   }
 
   .process-strip {

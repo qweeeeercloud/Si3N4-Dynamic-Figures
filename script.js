@@ -162,8 +162,8 @@ function createRoundedBoardGeometry(width, height, thickness, radius) {
   const geometry = new THREE.ExtrudeGeometry(shape, {
     depth: thickness,
     bevelEnabled: true,
-    bevelThickness: 0.025,
-    bevelSize: 0.045,
+    bevelThickness: 0.012,
+    bevelSize: 0.032,
     bevelSegments: 7,
     curveSegments: 12
   });
@@ -176,7 +176,7 @@ function addCopperRect(parent, width, height, x, y, rotation = 0) {
     new THREE.PlaneGeometry(width, height),
     parent.userData.copperMaterial
   );
-  mesh.position.set(x, y, 0.104);
+  mesh.position.set(x, y, 0.061);
   mesh.rotation.z = rotation;
   parent.add(mesh);
   return mesh;
@@ -187,7 +187,7 @@ function addCopperPad(parent, radius, x, y) {
     new THREE.CylinderGeometry(radius, radius, 0.012, 42),
     parent.userData.copperMaterial
   );
-  mesh.position.set(x, y, 0.111);
+  mesh.position.set(x, y, 0.067);
   mesh.rotation.x = Math.PI / 2;
   parent.add(mesh);
   return mesh;
@@ -238,7 +238,7 @@ function initProductViewer() {
     clearcoatRoughness: 0.22
   });
 
-  const boardGeometry = createRoundedBoardGeometry(5.45, 3.05, 0.16, 0.18);
+  const boardGeometry = createRoundedBoardGeometry(5.45, 3.05, 0.085, 0.18);
   const ceramic = new THREE.Mesh(boardGeometry, ceramicMaterial);
   board.add(ceramic);
 
@@ -283,11 +283,11 @@ function initProductViewer() {
       opacity: 0.78
     })
   );
-  labelPlane.position.set(0, 0.48, 0.113);
+  labelPlane.position.set(0, 0.48, 0.069);
   board.add(labelPlane);
 
   board.rotation.set(-0.62, 0.22, -0.1);
-  board.scale.setScalar(1.12);
+  board.scale.setScalar(1.08);
   scene.add(board);
 
   const halo = new THREE.Mesh(
