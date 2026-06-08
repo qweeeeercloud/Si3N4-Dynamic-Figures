@@ -9,7 +9,7 @@
       content="新能源氮化硅陶瓷基板制备生产线设计毕业设计动态资料页，展示流延成型与气压烧结等关键设备动态图。"
     >
     <link rel="stylesheet" href="styles.css">
-    <script src="script.js" defer></script>
+    <script type="module" src="script.js"></script>
   </head>
   <body>
     <header class="hero" aria-labelledby="page-title">
@@ -37,28 +37,21 @@
               <strong>运行中</strong>
             </div>
             <div class="substrate-scene">
-              <div class="substrate-model" aria-hidden="true">
-                <div class="substrate-layer copper-layer"></div>
-                <div class="substrate-layer ceramic-layer">
-                  <span class="scan-line"></span>
-                  <span class="circuit trace-a"></span>
-                  <span class="circuit trace-b"></span>
-                  <span class="circuit trace-c"></span>
-                  <span class="chip-pad pad-a"></span>
-                  <span class="chip-pad pad-b"></span>
-                  <span class="chip-pad pad-c"></span>
-                  <span class="chip-pad pad-d"></span>
-                </div>
-                <div class="substrate-edge"></div>
-              </div>
+              <div
+                id="productViewer"
+                class="product-viewer"
+                role="img"
+                aria-label="可拖拽旋转的成品氮化硅陶瓷基板三维模型"
+              ></div>
             </div>
             <div class="process-strip" aria-label="工艺节点">
-              <span style="--step: 0">流延</span>
-              <span style="--step: 1">排胶</span>
-              <span style="--step: 2">烧结</span>
-              <span style="--step: 3">抛光</span>
-              <span style="--step: 4">金属化</span>
-              <span style="--step: 5">检测</span>
+              <span style="--step: 0">球磨</span>
+              <span style="--step: 1">流延</span>
+              <span style="--step: 2">排胶</span>
+              <span style="--step: 3">烧结</span>
+              <span style="--step: 4">抛光</span>
+              <span style="--step: 5">金属化</span>
+              <span style="--step: 6">检测</span>
             </div>
           </div>
         </section>

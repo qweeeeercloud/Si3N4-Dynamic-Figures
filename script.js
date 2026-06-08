@@ -1,11 +1,14 @@
-(function () {
+import * as THREE from "./vendor/three.module.min.js";
+
+const reduceMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+function initHeroCanvas() {
   const canvas = document.getElementById("heroCanvas");
   if (!canvas) return;
 
   const context = canvas.getContext("2d");
   if (!context) return;
 
-  const reduceMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
   const state = {
     width: 0,
     height: 0,
@@ -105,9 +108,12 @@
     context.clearRect(0, 0, state.width, state.height);
     drawGrid();
     drawTraceLines();
-    drawScanningBand();
-    drawPoints();
-    state.frame += 1;
+
+    if (!reduceMotionQuery.matches) {
+      drawScanningBand();
+      drawPoints();
+      state.frame += 1;
+    }
 
     if (!document.hidden && !reduceMotionQuery.matches) {
       state.raf = window.requestAnimationFrame(render);
@@ -116,13 +122,7 @@
 
   function start() {
     window.cancelAnimationFrame(state.raf);
-    if (reduceMotionQuery.matches) {
-      context.clearRect(0, 0, state.width, state.height);
-      drawGrid();
-      drawTraceLines();
-      return;
-    }
-    state.raf = window.requestAnimationFrame(render);
+    render();
   }
 
   resize();
@@ -141,7 +141,241 @@
     }
   });
 
-  if (typeof reduceMotionQuery.addEventListener === "function") {
-    reduceMotionQuery.addEventListener("change", start);
+  reduceMotionQuery.addEventListener("change", start);
+}
+
+function createRoundedBoardGeometry(width, height, thickness, radius) {
+  const shape = new THREE.Shape();
+  const x = -width / 2;
+  const y = -height / 2;
+
+  shape.moveTo(x + radius, y);
+  shape.lineTo(x + width - radius, y);
+  shape.quadraticCurveTo(x + width, y, x + width, y + radius);
+  shape.lineTo(x + width, y + height - radius);
+  shape.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+  shape.lineTo(x + radius, y + height);
+  shape.quadraticCurveTo(x, y + height, x, y + height - radius);
+  shape.lineTo(x, y + radius);
+  shape.quadraticCurveTo(x, y, x + radius, y);
+
+  const geometry = new THREE.ExtrudeGeometry(shape, {
+    depth: thickness,
+    bevelEnabled: true,
+    bevelThickness: 0.025,
+    bevelSize: 0.045,
+    bevelSegments: 7,
+    curveSegments: 12
+  });
+  geometry.center();
+  return geometry;
+}
+
+function addCopperRect(parent, width, height, x, y, rotation = 0) {
+  const mesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(width, height),
+    parent.userData.copperMaterial
+  );
+  mesh.position.set(x, y, 0.104);
+  mesh.rotation.z = rotation;
+  parent.add(mesh);
+  return mesh;
+}
+
+function addCopperPad(parent, radius, x, y) {
+  const mesh = new THREE.Mesh(
+    new THREE.CylinderGeometry(radius, radius, 0.012, 42),
+    parent.userData.copperMaterial
+  );
+  mesh.position.set(x, y, 0.111);
+  mesh.rotation.x = Math.PI / 2;
+  parent.add(mesh);
+  return mesh;
+}
+
+function initProductViewer() {
+  const container = document.getElementById("productViewer");
+  if (!container) return;
+
+  const renderer = new THREE.WebGLRenderer({
+    antialias: true,
+    alpha: true,
+    preserveDrawingBuffer: true,
+    powerPreference: "high-performance"
+  });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setClearColor(0xffffff, 0);
+  container.appendChild(renderer.domElement);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
+  camera.position.set(4.8, 4.2, 6.4);
+  camera.lookAt(0, 0, 0);
+
+  const ambient = new THREE.HemisphereLight(0xffffff, 0xd7e2e3, 2.4);
+  scene.add(ambient);
+
+  const keyLight = new THREE.DirectionalLight(0xffffff, 2.8);
+  keyLight.position.set(4.2, 5.6, 6.5);
+  scene.add(keyLight);
+
+  const cyanLight = new THREE.PointLight(0x67c9d6, 4.5, 8);
+  cyanLight.position.set(-3.8, 2.2, 2.6);
+  scene.add(cyanLight);
+
+  const board = new THREE.Group();
+  board.userData.copperMaterial = new THREE.MeshStandardMaterial({
+    color: 0xc9975d,
+    metalness: 0.72,
+    roughness: 0.28
+  });
+
+  const ceramicMaterial = new THREE.MeshPhysicalMaterial({
+    color: 0xf9fbfa,
+    metalness: 0,
+    roughness: 0.33,
+    clearcoat: 0.42,
+    clearcoatRoughness: 0.22
+  });
+
+  const boardGeometry = createRoundedBoardGeometry(5.45, 3.05, 0.16, 0.18);
+  const ceramic = new THREE.Mesh(boardGeometry, ceramicMaterial);
+  board.add(ceramic);
+
+  const edgeGlow = new THREE.LineSegments(
+    new THREE.EdgesGeometry(boardGeometry, 18),
+    new THREE.LineBasicMaterial({
+      color: 0x65c8d7,
+      transparent: true,
+      opacity: 0.5
+    })
+  );
+  edgeGlow.scale.set(1.006, 1.006, 1.02);
+  board.add(edgeGlow);
+
+  addCopperRect(board, 4.4, 0.12, 0, 0.95);
+  addCopperRect(board, 4.2, 0.1, -0.05, -0.95);
+  addCopperRect(board, 0.12, 1.62, -1.85, 0.1);
+  addCopperRect(board, 0.12, 1.58, 1.75, -0.08);
+  addCopperRect(board, 1.15, 0.1, -0.78, 0.24, Math.PI / 7);
+  addCopperRect(board, 1.2, 0.1, 0.82, -0.24, -Math.PI / 8);
+  addCopperRect(board, 0.92, 0.09, 0.12, 0.0, Math.PI / 2);
+
+  [
+    [-2.05, 0.95],
+    [-0.8, 0.95],
+    [0.52, 0.95],
+    [1.92, 0.95],
+    [-1.78, -0.95],
+    [-0.45, -0.95],
+    [0.95, -0.95],
+    [2.0, -0.95],
+    [-1.86, 0.1],
+    [1.76, -0.1],
+    [0.12, 0.0]
+  ].forEach(([x, y]) => addCopperPad(board, 0.155, x, y));
+
+  const labelPlane = new THREE.Mesh(
+    new THREE.PlaneGeometry(1.14, 0.34),
+    new THREE.MeshBasicMaterial({
+      color: 0xeaf5f5,
+      transparent: true,
+      opacity: 0.78
+    })
+  );
+  labelPlane.position.set(0, 0.48, 0.113);
+  board.add(labelPlane);
+
+  board.rotation.set(-0.62, 0.22, -0.1);
+  scene.add(board);
+
+  const halo = new THREE.Mesh(
+    new THREE.RingGeometry(2.85, 2.88, 96),
+    new THREE.MeshBasicMaterial({
+      color: 0x65c8d7,
+      transparent: true,
+      opacity: 0.24,
+      side: THREE.DoubleSide
+    })
+  );
+  halo.position.z = -0.34;
+  scene.add(halo);
+
+  const interaction = {
+    dragging: false,
+    pointerId: null,
+    lastX: 0,
+    lastY: 0,
+    targetX: board.rotation.x,
+    targetY: board.rotation.y,
+    idleUntil: 0
+  };
+
+  function resize() {
+    const { width, height } = container.getBoundingClientRect();
+    const safeWidth = Math.max(1, Math.floor(width));
+    const safeHeight = Math.max(1, Math.floor(height));
+    renderer.setSize(safeWidth, safeHeight, false);
+    camera.aspect = safeWidth / safeHeight;
+    camera.updateProjectionMatrix();
   }
-})();
+
+  function onPointerDown(event) {
+    interaction.dragging = true;
+    interaction.pointerId = event.pointerId;
+    interaction.lastX = event.clientX;
+    interaction.lastY = event.clientY;
+    renderer.domElement.setPointerCapture(event.pointerId);
+    container.classList.add("is-dragging");
+  }
+
+  function onPointerMove(event) {
+    if (!interaction.dragging || event.pointerId !== interaction.pointerId) return;
+    const deltaX = event.clientX - interaction.lastX;
+    const deltaY = event.clientY - interaction.lastY;
+    interaction.lastX = event.clientX;
+    interaction.lastY = event.clientY;
+    interaction.targetY += deltaX * 0.012;
+    interaction.targetX += deltaY * 0.01;
+    interaction.targetX = Math.max(-1.08, Math.min(0.92, interaction.targetX));
+  }
+
+  function stopDragging(event) {
+    if (event.pointerId !== interaction.pointerId) return;
+    interaction.dragging = false;
+    interaction.pointerId = null;
+    interaction.idleUntil = performance.now() + 1200;
+    container.classList.remove("is-dragging");
+  }
+
+  renderer.domElement.addEventListener("pointerdown", onPointerDown);
+  renderer.domElement.addEventListener("pointermove", onPointerMove);
+  renderer.domElement.addEventListener("pointerup", stopDragging);
+  renderer.domElement.addEventListener("pointercancel", stopDragging);
+
+  resize();
+
+  function animate(now) {
+    if (!reduceMotionQuery.matches && !interaction.dragging && now > interaction.idleUntil) {
+      interaction.targetY += 0.004;
+      halo.rotation.z += 0.003;
+    }
+
+    board.rotation.x += (interaction.targetX - board.rotation.x) * 0.12;
+    board.rotation.y += (interaction.targetY - board.rotation.y) * 0.12;
+    board.rotation.z = -0.1 + Math.sin(now * 0.0012) * 0.025;
+    board.position.y = reduceMotionQuery.matches ? 0 : Math.sin(now * 0.001) * 0.07;
+
+    renderer.render(scene, camera);
+    window.requestAnimationFrame(animate);
+  }
+
+  window.addEventListener("resize", resize);
+  reduceMotionQuery.addEventListener("change", () => {
+    interaction.idleUntil = performance.now() + 1200;
+  });
+  window.requestAnimationFrame(animate);
+}
+
+initHeroCanvas();
+initProductViewer();
