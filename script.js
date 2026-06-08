@@ -209,7 +209,7 @@ function initProductViewer() {
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
-  camera.position.set(4.8, 4.2, 6.4);
+  camera.position.set(4.2, 3.75, 5.45);
   camera.lookAt(0, 0, 0);
 
   const ambient = new THREE.HemisphereLight(0xffffff, 0xd7e2e3, 2.4);
@@ -287,6 +287,7 @@ function initProductViewer() {
   board.add(labelPlane);
 
   board.rotation.set(-0.62, 0.22, -0.1);
+  board.scale.setScalar(1.12);
   scene.add(board);
 
   const halo = new THREE.Mesh(

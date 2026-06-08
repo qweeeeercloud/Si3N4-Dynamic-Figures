@@ -148,7 +148,7 @@ h1 {
 
 .stage-panel {
   position: relative;
-  min-height: 430px;
+  min-height: 500px;
   padding: 18px 18px 22px;
   border: 1px solid rgba(183, 202, 202, 0.88);
   border-radius: 8px;
@@ -197,14 +197,14 @@ h1 {
   position: relative;
   display: grid;
   place-items: center;
-  min-height: 314px;
-  padding: 18px 0 8px;
+  min-height: 386px;
+  padding: 20px 0 10px;
 }
 
 .product-viewer {
   position: relative;
-  width: min(100%, 520px);
-  height: 292px;
+  width: min(100%, 640px);
+  height: 360px;
   overflow: hidden;
   border: 1px solid rgba(178, 202, 205, 0.72);
   border-radius: 8px;
@@ -441,16 +441,16 @@ main {
   }
 
   .stage-panel {
-    min-height: 360px;
+    min-height: 430px;
   }
 
   .substrate-scene {
-    min-height: 284px;
+    min-height: 330px;
     padding-top: 14px;
   }
 
   .product-viewer {
-    height: 260px;
+    height: 300px;
   }
 
   main {
@@ -499,7 +499,7 @@ main {
   }
 
   .product-viewer {
-    height: 230px;
+    height: 270px;
   }
 
   .process-strip {
